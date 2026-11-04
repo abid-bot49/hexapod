@@ -1,0 +1,304 @@
+<?xml version="1.0"?>
+<robot name="hexapod" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- ========================================== -->
+  <!-- PARAMETER ROBOT                            -->
+  <!-- ========================================== -->
+
+  <xacro:property name="body_length" value="0.30"/>
+  <xacro:property name="body_width" value="0.20"/>
+  <xacro:property name="body_height" value="0.04"/>
+
+  <xacro:property name="coxa_length" value="0.05"/>
+  <xacro:property name="femur_length" value="0.10"/>
+  <xacro:property name="tibia_length" value="0.15"/>
+
+  <xacro:property name="body_z" value="0.28"/>
+
+  <!-- ========================================== -->
+  <!-- MATERIAL                                   -->
+  <!-- ========================================== -->
+
+  <material name="body_color">
+    <color rgba="0.15 0.25 0.40 1.0"/>
+  </material>
+
+  <material name="coxa_color">
+    <color rgba="0.20 0.65 0.80 1.0"/>
+  </material>
+
+  <material name="femur_color">
+    <color rgba="0.20 0.75 0.35 1.0"/>
+  </material>
+
+  <material name="tibia_color">
+    <color rgba="0.85 0.45 0.15 1.0"/>
+  </material>
+
+  <!-- ========================================== -->
+  <!-- MAIN BODY                                  -->
+  <!-- ========================================== -->
+
+  <link name="base_link">
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+
+      <geometry>
+        <box size="${body_length} ${body_width} ${body_height}"/>
+      </geometry>
+
+      <material name="body_color"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+
+      <geometry>
+        <box size="${body_length} ${body_width} ${body_height}"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="2.0"/>
+
+      <inertia
+        ixx="0.007"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="0.016"
+        iyz="0.0"
+        izz="0.021"/>
+    </inertial>
+
+  </link>
+
+  <!-- ========================================== -->
+  <!-- LEG MACRO                                  -->
+  <!-- ========================================== -->
+
+  <xacro:macro
+    name="hexapod_leg"
+    params="name x y yaw">
+
+    <!-- COXA LINK -->
+
+    <link name="${name}_coxa_link">
+
+      <visual>
+        <origin
+          xyz="${coxa_length / 2} 0 0"
+          rpy="0 0 0"/>
+
+        <geometry>
+          <box size="${coxa_length} 0.025 0.025"/>
+        </geometry>
+
+        <material name="coxa_color"/>
+      </visual>
+
+      <collision>
+        <origin
+          xyz="${coxa_length / 2} 0 0"
+          rpy="0 0 0"/>
+
+        <geometry>
+          <box size="${coxa_length} 0.025 0.025"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <origin xyz="${coxa_length / 2} 0 0"/>
+        <mass value="0.10"/>
+
+        <inertia
+          ixx="0.00001"
+          ixy="0.0"
+          ixz="0.0"
+          iyy="0.00003"
+          iyz="0.0"
+          izz="0.00003"/>
+      </inertial>
+
+    </link>
+
+    <!-- COXA JOINT -->
+
+    <joint name="${name}_coxa_joint" type="revolute">
+
+      <parent link="base_link"/>
+      <child link="${name}_coxa_link"/>
+
+      <origin xyz="${x} ${y} -0.02" rpy="0 0 ${yaw}"/>
+
+      <axis xyz="0 0 1"/>
+
+      <limit
+        lower="-0.7854"
+        upper="0.7854"
+        effort="2.0"
+        velocity="2.0"/>
+
+    </joint>
+
+    <!-- FEMUR LINK -->
+
+    <link name="${name}_femur_link">
+
+      <visual>
+        <origin xyz="0 0 ${-femur_length / 2}"/>
+
+        <geometry>
+          <box size="0.025 0.025 ${femur_length}"/>
+        </geometry>
+
+        <material name="femur_color"/>
+      </visual>
+
+      <collision>
+        <origin xyz="0 0 ${-femur_length / 2}"/>
+
+        <geometry>
+          <box size="0.025 0.025 ${femur_length}"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <origin xyz="0 0 ${-femur_length / 2}"/>
+        <mass value="0.15"/>
+
+        <inertia
+          ixx="0.00013"
+          ixy="0.0"
+          ixz="0.0"
+          iyy="0.00013"
+          iyz="0.0"
+          izz="0.00001"/>
+      </inertial>
+
+    </link>
+
+    <!-- FEMUR JOINT -->
+
+    <joint name="${name}_femur_joint" type="revolute">
+
+      <parent link="${name}_coxa_link"/>
+      <child link="${name}_femur_link"/>
+
+      <origin xyz="${coxa_length} 0 0" rpy="0 0 0"/>
+
+      <axis xyz="0 1 0"/>
+
+      <limit
+        lower="-1.0472"
+        upper="1.0472"
+        effort="3.0"
+        velocity="2.0"/>
+
+    </joint>
+
+    <!-- TIBIA LINK -->
+
+    <link name="${name}_tibia_link">
+
+      <visual>
+        <origin xyz="0 0 ${-tibia_length / 2}"/>
+
+        <geometry>
+          <box size="0.020 0.020 ${tibia_length}"/>
+        </geometry>
+
+        <material name="tibia_color"/>
+      </visual>
+
+      <collision>
+        <origin xyz="0 0 ${-tibia_length / 2}"/>
+
+        <geometry>
+          <box size="0.020 0.020 ${tibia_length}"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <origin xyz="0 0 ${-tibia_length / 2}"/>
+        <mass value="0.10"/>
+
+        <inertia
+          ixx="0.00019"
+          ixy="0.0"
+          ixz="0.0"
+          iyy="0.00019"
+          iyz="0.0"
+          izz="0.00001"/>
+      </inertial>
+
+    </link>
+
+    <!-- TIBIA JOINT -->
+
+    <joint name="${name}_tibia_joint" type="revolute">
+
+      <parent link="${name}_femur_link"/>
+      <child link="${name}_tibia_link"/>
+
+      <origin xyz="0 0 ${-femur_length}" rpy="0 0 0"/>
+
+      <axis xyz="0 1 0"/>
+
+      <limit
+        lower="-1.5708"
+        upper="1.5708"
+        effort="3.0"
+        velocity="2.0"/>
+
+    </joint>
+
+    <!-- FOOT FRAME -->
+
+    <link name="${name}_foot"/>
+
+    <joint name="${name}_foot_fixed_joint" type="fixed">
+
+      <parent link="${name}_tibia_link"/>
+      <child link="${name}_foot"/>
+
+      <origin xyz="0 0 ${-tibia_length}" rpy="0 0 0"/>
+
+    </joint>
+
+  </xacro:macro>
+
+  <!-- ========================================== -->
+  <!-- SIX LEGS                                   -->
+  <!-- ========================================== -->
+
+  <!-- LEFT SIDE -->
+
+  <xacro:hexapod_leg
+    name="front_left"
+    x="0.10" y="0.08" yaw="0.7854"/>
+
+  <xacro:hexapod_leg
+    name="middle_left"
+    x="0.0" y="0.10" yaw="1.5708"/>
+
+  <xacro:hexapod_leg
+    name="rear_left"
+    x="-0.10" y="0.08" yaw="2.3562"/>
+
+  <!-- RIGHT SIDE -->
+
+  <xacro:hexapod_leg
+    name="front_right"
+    x="0.10" y="-0.08" yaw="-0.7854"/>
+
+  <xacro:hexapod_leg
+    name="middle_right"
+    x="0.0" y="-0.10" yaw="-1.5708"/>
+
+  <xacro:hexapod_leg
+    name="rear_right"
+    x="-0.10" y="-0.08" yaw="-2.3562"/>
+
+</robot>

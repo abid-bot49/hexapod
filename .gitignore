@@ -1,0 +1,49 @@
+
+# ROS 2 workspace build artifacts
+build/
+install/
+log/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python packaging
+dist/
+*.egg-info/
+
+# ROS 2 bags and recordings
+*.bag
+*.db3
+*.mcap
+rosbag2_*/
+
+# Logs and temporary files
+*.log
+*.swp
+*.tmp
+*~
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# SSH and private keys
+*.pem
+*.key
+id_rsa
+id_ed25519
+
+# IDE and editor files
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
